@@ -42,15 +42,13 @@ app.component('product-display', {
             Add to Cart
           </button>
   
-          <!-- solution -->
           <button 
-          class="button" 
-          :class="{ disabledButton: !inStock }" 
-          :disabled="!inStock" 
-          @click="removeFromCart">
-          Remove Item
-        </button>
-        <!-- solution -->
+  class="button" 
+  :class="{ disabledButton: variants[selectedVariant].cartCount === 0 }" 
+  :disabled="variants[selectedVariant].cartCount === 0" 
+  @click="removeFromCart">
+  Remove Item
+  </button>
   
         </div>
       </div>
@@ -62,19 +60,27 @@ app.component('product-display', {
           selectedVariant: 0,
           details: ['Companion plant'],
           variants: [
-            { id: 2234, color: 'orange', image: 'assets/images/what-do-you-think-orange-pikmin-will-do-v0-7a0uxfwe26na1.png', quantity: 50 },
-            { id: 2235, color: 'yellow', image: 'assets/images/images.png', quantity: 0 },
-            { id: 2236, color: 'blue', image: 'assets/images/d6g6lxg-38e7c5d3-bc0f-4c63-bc1a-2cece36df019.png', quantity: 30 },
+            { id: 2234, color: 'orange', image: 'assets/images/what-do-you-think-orange-pikmin-will-do-v0-7a0uxfwe26na1.png', quantity: 5, cartCount: 0 },
+            { id: 2235, color: 'yellow', image: 'assets/images/images.png', quantity: 0, cartCount: 0 },
+            { id: 2236, color: 'blue', image: 'assets/images/d6g6lxg-38e7c5d3-bc0f-4c63-bc1a-2cece36df019.png', quantity: 30, cartCount: 0 },
           ]
       }
     },
     methods: {
-        addToCart() {
-            this.$emit('add-to-cart', this.variants[this.selectedVariant].id)
-        },
-        removeFromCart() {
+      addToCart() {
+        if (this.variants[this.selectedVariant].quantity > 0) {
+          this.$emit('add-to-cart', this.variants[this.selectedVariant].id)
+          this.variants[this.selectedVariant].quantity--
+          this.variants[this.selectedVariant].cartCount++
+        }
+      },
+      removeFromCart() {
+        if (this.variants[this.selectedVariant].cartCount > 0) {
           this.$emit('remove-from-cart', this.variants[this.selectedVariant].id)
-        },
+          this.variants[this.selectedVariant].quantity++
+          this.variants[this.selectedVariant].cartCount--
+        }
+      },
         updateVariant(index) {
             this.selectedVariant = index
         }
